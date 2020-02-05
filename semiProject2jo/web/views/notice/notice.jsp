@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<!-- 들어 가면 리스트 구현을 해야 된다. -->
+<%-- <% ArrayList<Notice> noticeList = (ArrayList<Notice>)request.getAttribute("noticeList"); %> --%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -28,6 +30,9 @@
             <div class="margin-list-head">
                 <h1 align="left">공지사항</h1>
                 <hr color="lightgray" class="table-line">
+                
+                <form action action="" method="post">
+                
                 <button type="button" class="btn btn-light">전체</button>
                 <button type="button" class="btn btn-primary">부서별</button>
                 <button type="button" class="btn btn-info">강아지</button>
@@ -39,9 +44,10 @@
                 <label>분류</label> 
                 <select id="searchType" name="searchType"> 
                     <!-- 로그인한 사용자에 대한 권한과 부서등에 따라서 alert등으로 접근 금지를 설정 한다. --->
-                <option>전체</option>
-                <option>공지사항</option> 
-                <option>인사명령</option>
+                	<option valu = "">전체</option>
+                	<option valu = "notice">공지사항</option> 
+                	<!-- Personnel Appointment : 인사명령 -->
+                	<option value = "pa">인사명령</option>
                 </select> &nbsp;
                 <!-- 부서, 관리자의 전체 공지등 알아야 하는 필요한 만 띄운다.  -->
                 <!--<input type="checkbox" name="name1">  -->
@@ -56,74 +62,100 @@
                 <hr class="table-line" style="margin-left:-0px;">
                 <div class="table-line">
                     <table style="width:100%; border-collapse:collapse;" id="list">
-                        <thead>
-                            <tr class='table-line'>
-                                <th><input type="checkbox" id="checkAll"></th>
-                                <th>번호</th>
-                                <th>분류</th>
-                                <th>제목</th>
-                                <th>작성자</th>
-                                <th>날짜</th>
-                                <th>조회수</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr align="center" class='table-line'>
-                                <td><input type="checkbox" name="list"></td>
-                                <td>1</td> 
-                                <td>공지사항</td>
-                                <td>회장님말씀</td>
-                                <td>나회장</td>
-                                <td>날짜</td>
-                                <td>999</td>
-                            </tr>
-                            <tr align="center" class='table-line'>
-                                <td><input type="checkbox" name="list"></td>
-                                <td>2</td> 
-                                <td>인사명령</td>
-                                <td>인사명령 제 28호</td>
-                                <td>인사팀</td>
-                                <td>날짜</td>
-                                <td>20</td>
-                            </tr>
-                            <tr align="center" class='table-line'>
-                                <td><input type="checkbox" name="list"></td>
-                                <td>3</td> 
-                                <td>공지사항</td>
-                                <td>아유회 날짜 공지</td>
-                                <td>기획팀</td>
-                                <td>날짜</td>
-                                <td>99</td>
-                                </tr>
-                        </tbody>
+                           <tr class='table-line'>
+                               <th><input type="checkbox" id="checkAll"></th>
+                               <th>번호</th>
+                               <th>분류</th>
+                               <th>제목</th>
+                               <th>작성자</th>
+                               <th>날짜</th>
+                               <th>조회수</th>
+                           </tr>
+<%--                      <% for(Notice n : noticeList){ %>
+                           <tr align="center" class='table-line'>
+ 								<td><%= n.getNno() %></td>
+								<td><%= n.getNtitle() %></td>
+								<td><%= n.getNwriter() %></td>
+								<td><%= n.getNcount() %></td>
+								<td><%= n.getNdate() %></td> 
+						   </tr>
+                          <% } %> --%>
                     </table>
                     <button id="write" class="btn btn-light" style="margin-left:-10px;">글쓰기</button> 
                     <br>
                     <div>
                         <select id="search" name="search" style="height: 30px; margin-left:300px;"> 
-                         <option>검색조건</option>
-                         <option>제목</option> 
-                         <option>내용</option>
-                         <option>직급</option>
+                         <option value = "">검색조건</option>
+                         <option value = "title">제목</option> 
+                         <option value = "content">내용</option>
+                         <option value = "jobs">직급</option>
          <!-- 분류에 따른 게시판을 직급별로 쓴 것을 보는 것 단 권한이 없으면 접근 불가 -->
-                         <option>제목+내용</option>
-                         <option>전체조건</option>
+                         <option value = "">제목+내용</option>
+                         <option value= "">전체조건</option>
                      </select>&nbsp;
                      <input class="form-control" type="text" id="keyword" 
                          name="keyword"  placeholder="검색어를 입력하세요"
                          style="width:200px;"/>
  
-                     <button id="btn">검색</button>
-                    <ul id="pagenation" align="center" style="margin-left:-90px;">
+                     <input type="submit" value = "검색">
+                     <input type="reset" value = "취소">
+                     <%-- 							<div class="" align="center">
+								<button onclick="location.href='<%=request.getContextPath()%>/selectList.bo?currentPage=1'"> << </button>
+								<%
+									if (currentPage <= 1) {
+								%>
+								<button disabled><</button>
+								<%
+									} else {
+								%>
+								<button
+									onclick="location.href='<%=request.getContextPath()%>/selectList.bo?currentPage=<%=currentPage - 1%>'"> < </button>
+								<%
+									}
+								%>
+
+								<%
+									for (int p = startPage; p <= endPage; p++) {
+										if (p == currentPage) {
+								%>
+								<button disabled><%=p%></button>
+								<%
+									} else {
+								%>
+								<button
+									onclick="location.href='<%=request.getContextPath()%>/selectList.bo?currentPage=<%=p%>' "><%=p%></button>
+								<%
+									}
+								%>
+								<%
+									}
+								%>
+
+								<%
+									if (currentPage >= maxPage) {
+								%>
+								<button disabled>></button>
+								<%
+									} else {
+								%>
+								<button
+									onclick="location.href='<%=request.getContextPath()%>/selectList.bo?currentPage=<%=currentPage + 1%>' "> > </button>
+								<%
+									}
+								%>
+								<button onclick="location.href='<%=request.getContextPath()%>/selectList.bo?currentPage=<%=maxPage%>' "> >></button>
+							</div> --%><!-- 페이징 처리 부분 -->  
+<!--                     <ul id="pagenation" align="center" style="margin-left:-90px;">
                         <li><button class="listbtn">이전</button></li>
                         <li><button class="listbtn">1</button></li>
                         <li><button class="listbtn">2</button></li>
                         <li><button class="listbtn">3</button></li>
                         <li><button class="listbtn">다음</button></li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
         </div>
+        </form>
     </div>
 
     <!-- 풋터 부분 include -->
